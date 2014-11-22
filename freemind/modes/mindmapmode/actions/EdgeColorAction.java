@@ -43,6 +43,9 @@ import freemind.modes.mindmapmode.actions.xml.ActorXml;
 
 public class EdgeColorAction extends AbstractAction implements ActorXml, IActionElement{
 	private final MindMapController controller;
+	
+	private MindMapNode node;
+	private Color color;
 
 	public EdgeColorAction(MindMapController controller) {
 		super(controller.getText("edge_color"));
@@ -65,13 +68,20 @@ public class EdgeColorAction extends AbstractAction implements ActorXml, IAction
 	}
 
 	public void setEdgeColor(MindMapNode node, Color color) {
-		EdgeColorFormatAction doAction = createEdgeColorFormatAction(node,
-				color);
-		EdgeColorFormatAction undoAction = createEdgeColorFormatAction(node,
-				((EdgeAdapter) node.getEdge()).getRealColor());
-		controller.doTransaction(this.getClass().getName(),
-				new ActionPair(doAction, undoAction));
-
+		this.node = node;
+		this.color = color;
+	}
+	
+	public MindMapNode getNode(){
+		return this.node;
+	}
+	
+	public Color getColor(){
+		return this.color;
+	}
+	
+	public MindMapController getController(){
+		return this.controller;
 	}
 
 	/*
@@ -92,16 +102,6 @@ public class EdgeColorAction extends AbstractAction implements ActorXml, IAction
 				controller.nodeChanged(node);
 			}
 		}
-	}
-
-	public EdgeColorFormatAction createEdgeColorFormatAction(MindMapNode node,
-			Color color) {
-		EdgeColorFormatAction edgeAction = new EdgeColorFormatAction();
-		edgeAction.setNode(node.getObjectId(controller));
-		if (color != null) {
-			edgeAction.setColor(Tools.colorToXml(color));
-		}
-		return edgeAction;
 	}
 
 	/*
