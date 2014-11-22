@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 import org.jibx.runtime.IUnmarshallingContext;
 import org.jibx.runtime.JiBXException;
@@ -96,6 +99,21 @@ public class MindMapMenuController
 			freemind.main.Resources.getInstance().logException(e);
 			throw new IllegalArgumentException(
 					"Menu structure could not be read.");
+		}
+	}
+
+	public void addIconsToMenu(StructuredMenuHolder holder,
+			String iconMenuString) {
+		JMenu iconMenu = holder.addMenu(new JMenu(getText("icon_menu")),
+				iconMenuString + "/.");
+		holder.addAction(removeLastIconAction, iconMenuString
+				+ "/removeLastIcon");
+		holder.addAction(removeAllIconsAction, iconMenuString
+				+ "/removeAllIcons");
+		holder.addSeparator(iconMenuString);
+		for (int i = 0; i < iconActions.size(); ++i) {
+			JMenuItem item = holder.addAction((Action) iconActions.get(i),
+					iconMenuString + "/" + i);
 		}
 	}
 }
