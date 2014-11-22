@@ -46,6 +46,9 @@ import freemind.modes.mindmapmode.actions.xml.ActorXml;
 public class CloudColorAction extends FreemindAction implements ActorXml,
 		MenuItemEnabledListener, IActionElement {
 	private final MindMapController controller;
+	
+	private MindMapNode node;
+	private Color color;
 
 	public CloudColorAction(MindMapController controller) {
 		super("cloud_color", "images/Colors24.gif", controller);
@@ -72,19 +75,20 @@ public class CloudColorAction extends FreemindAction implements ActorXml,
 	}
 
 	public void setCloudColor(MindMapNode node, Color color) {
-		CloudColorXmlAction doAction = createCloudColorXmlAction(node, color);
-		CloudColorXmlAction undoAction = createCloudColorXmlAction(node,
-				(node.getCloud() == null) ? null : node.getCloud().getColor());
-		controller.doTransaction(this.getClass().getName(),
-				new ActionPair(doAction, undoAction));
+		this.node = node;
+		this.color = color;
 	}
-
-	public CloudColorXmlAction createCloudColorXmlAction(MindMapNode node,
-			Color color) {
-		CloudColorXmlAction nodeAction = new CloudColorXmlAction();
-		nodeAction.setNode(node.getObjectId(controller));
-		nodeAction.setColor(Tools.colorToXml(color));
-		return nodeAction;
+	
+	public MindMapNode getNode(){
+		return this.node;
+	}
+	
+	public Color getColor(){
+		return this.color;
+	}
+	
+	public MindMapController getController(){
+		return this.controller;
 	}
 
 	public void act(XmlAction action) {
