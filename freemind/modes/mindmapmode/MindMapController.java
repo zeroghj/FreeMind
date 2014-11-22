@@ -180,6 +180,7 @@ import freemind.modes.mindmapmode.actions.NewChildAction;
 import freemind.modes.mindmapmode.actions.NewPreviousSiblingAction;
 import freemind.modes.mindmapmode.actions.NewSiblingAction;
 import freemind.modes.mindmapmode.actions.NodeBackgroundColorAction;
+import freemind.modes.mindmapmode.actions.SetColorActionVisitor;
 import freemind.modes.mindmapmode.actions.NodeBackgroundColorAction.RemoveNodeBackgroundColorAction;
 import freemind.modes.mindmapmode.actions.NodeColorAction;
 import freemind.modes.mindmapmode.actions.NodeColorBlendAction;
@@ -1429,6 +1430,7 @@ public class MindMapController extends ControllerAdapter implements
 
 	public void setCloudColor(MindMapNode node, Color color) {
 		cloudColor.setCloudColor(node, color);
+		cloudColor.accept(new SetColorActionVisitor());
 	}
 
 	// Node editing
@@ -1455,6 +1457,7 @@ public class MindMapController extends ControllerAdapter implements
 
 	public void setNodeColor(MindMapNode node, Color color) {
 		nodeColor.setNodeColor(node, color);
+		nodeColor.accept(new SetColorActionVisitor());
 	}
 
 	public void setNodeBackgroundColor(MindMapNode node, Color color) {
@@ -1475,6 +1478,7 @@ public class MindMapController extends ControllerAdapter implements
 
 	public void setEdgeColor(MindMapNode node, Color color) {
 		edgeColor.setEdgeColor(node, color);
+		edgeColor.accept(new SetColorActionVisitor());
 	}
 
 	public void applyPattern(MindMapNode node, String patternName) {
