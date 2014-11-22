@@ -44,7 +44,7 @@ import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.modes.mindmapmode.actions.xml.ActorXml;
 
 public class CloudColorAction extends FreemindAction implements ActorXml,
-		MenuItemEnabledListener {
+		MenuItemEnabledListener, IActionElement {
 	private final MindMapController controller;
 
 	public CloudColorAction(MindMapController controller) {
@@ -122,4 +122,7 @@ public class CloudColorAction extends FreemindAction implements ActorXml,
 				&& (controller.getSelected().getCloud() != null);
 	}
 
+	public void accept(IActionVisitor visitor){
+		visitor.visit(this);
+	}
 }

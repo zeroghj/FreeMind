@@ -38,7 +38,7 @@ import freemind.modes.mindmapmode.MindMapNodeModel;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.modes.mindmapmode.actions.xml.ActorXml;
 
-public class NodeColorAction extends FreemindAction implements ActorXml {
+public class NodeColorAction extends FreemindAction implements ActorXml, IActionElement {
 	private final MindMapController controller;
 
 	public NodeColorAction(MindMapController controller) {
@@ -98,6 +98,10 @@ public class NodeColorAction extends FreemindAction implements ActorXml {
 
 	public Class getDoActionClass() {
 		return NodeColorFormatAction.class;
+	}
+	
+	public void accept(IActionVisitor visitor){
+		visitor.visit(this);
 	}
 
 }

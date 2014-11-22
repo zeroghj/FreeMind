@@ -41,7 +41,7 @@ import freemind.modes.mindmapmode.MindMapNodeModel;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.modes.mindmapmode.actions.xml.ActorXml;
 
-public class EdgeColorAction extends AbstractAction implements ActorXml {
+public class EdgeColorAction extends AbstractAction implements ActorXml, IActionElement{
 	private final MindMapController controller;
 
 	public EdgeColorAction(MindMapController controller) {
@@ -111,6 +111,10 @@ public class EdgeColorAction extends AbstractAction implements ActorXml {
 	 */
 	public Class getDoActionClass() {
 		return EdgeColorFormatAction.class;
+	}
+	
+	public void accept(IActionVisitor visitor){
+		visitor.visit(this);
 	}
 
 }
