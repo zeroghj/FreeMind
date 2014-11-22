@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import freemind.controller.actions.generated.instance.CloudColorXmlAction;
 import freemind.controller.actions.generated.instance.EdgeColorFormatAction;
+import freemind.controller.actions.generated.instance.NodeColorFormatAction;
 import freemind.main.Tools;
 import freemind.modes.EdgeAdapter;
 import freemind.modes.MindMapNode;
@@ -57,6 +58,27 @@ public class SetColorActionVisitor implements IActionVisitor{
 	}
 	
 	public void visit(NodeColorAction nodeColorAct){
+		this.controller = nodeColorAct.getController();
 		
+		MindMapNode node = nodeColorAct.getNode();
+		Color color = nodeColorAct.getColor();
+		
+		if (Tools.safeEquals(color, node.getColor())) {
+			return;
+		}
+		NodeColorFormatAction doAction = createNodeColorFormatAction(node,
+				color);
+		NodeColorFormatAction undoAction = createNodeColorFormatAction(node,
+				node.getColor());
+		controller.doTransaction(this.getClass().getName(),
+				new ActionPair(doAction, undoAction));
+	}
+	
+	public NodeColorFormatAction createNodeColorFormatAction(MindMapNode node,
+			Color color) {
+		NodeColorFormatAction nodeAction = new NodeColorFormatAction();
+		nodeAction.setNode(node.getObjectId(controller));
+		nodeAction.setColor(Tools.colorToXml(color));
+		return nodeAction;
 	}
 }

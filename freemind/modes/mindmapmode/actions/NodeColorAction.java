@@ -40,6 +40,9 @@ import freemind.modes.mindmapmode.actions.xml.ActorXml;
 
 public class NodeColorAction extends FreemindAction implements ActorXml, IActionElement {
 	private final MindMapController controller;
+	
+	private MindMapNode node;
+	private Color color;
 
 	public NodeColorAction(MindMapController controller) {
 		super("node_color", (String) null, controller);
@@ -63,23 +66,20 @@ public class NodeColorAction extends FreemindAction implements ActorXml, IAction
 	}
 
 	public void setNodeColor(MindMapNode node, Color color) {
-		if (Tools.safeEquals(color, node.getColor())) {
-			return;
-		}
-		NodeColorFormatAction doAction = createNodeColorFormatAction(node,
-				color);
-		NodeColorFormatAction undoAction = createNodeColorFormatAction(node,
-				node.getColor());
-		controller.doTransaction(this.getClass().getName(),
-				new ActionPair(doAction, undoAction));
+		this.node = node;
+		this.color = color;
 	}
-
-	public NodeColorFormatAction createNodeColorFormatAction(MindMapNode node,
-			Color color) {
-		NodeColorFormatAction nodeAction = new NodeColorFormatAction();
-		nodeAction.setNode(node.getObjectId(controller));
-		nodeAction.setColor(Tools.colorToXml(color));
-		return nodeAction;
+	
+	public MindMapNode getNode(){
+		return this.node;
+	}
+	
+	public Color getColor(){
+		return this.color;
+	}
+	
+	public MindMapController getController(){
+		return this.controller;
 	}
 
 	public void act(XmlAction action) {
