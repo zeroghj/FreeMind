@@ -898,7 +898,7 @@ public class MindMapController extends ControllerAdapter implements
 	}
 
 	public MenuStructure updateMenusFromXml(InputStream in) {
-		mindMapMenuController.updateMenusFromXml(in);
+		return mindMapMenuController.updateMenusFromXml(in);
 	}
 
 	/**
