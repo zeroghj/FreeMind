@@ -125,11 +125,11 @@ public class MindMapMenuController
 
 	public void addIconsToMenu(StructuredMenuHolder holder,
 			String iconMenuString) {
-		JMenu iconMenu = holder.addMenu(new JMenu(getText("icon_menu")),
+		JMenu iconMenu = holder.addMenu(new JMenu(mindMapController.getText("icon_menu")),
 				iconMenuString + "/.");
-		holder.addAction(removeLastIconAction, iconMenuString
+		holder.addAction(mindMapController.removeLastIconAction, iconMenuString
 				+ "/removeLastIcon");
-		holder.addAction(removeAllIconsAction, iconMenuString
+		holder.addAction(mindMapController.removeAllIconsAction, iconMenuString
 				+ "/removeAllIcons");
 		holder.addSeparator(iconMenuString);
 		for (int i = 0; i < iconActions.size(); ++i) {
@@ -144,7 +144,7 @@ public class MindMapMenuController
 			JMenuItem item = holder.addAction(patterns[i], formatMenuString
 					+ "patterns/patterns/" + i);
 			item.setAccelerator(KeyStroke
-					.getKeyStroke(getFrame().getAdjustableProperty(
+					.getKeyStroke(mindMapController.getFrame().getAdjustableProperty(
 							"keystroke_apply_pattern_" + (i + 1))));
 		}
 	}
@@ -176,7 +176,7 @@ public class MindMapMenuController
 				holder.addCategory(newCategory);
 				if (cat instanceof MenuSubmenu) {
 					MenuSubmenu submenu = (MenuSubmenu) cat;
-					holder.addMenu(new JMenu(getText(submenu.getNameRef())),
+					holder.addMenu(new JMenu(mindMapController.getText(submenu.getNameRef())),
 							newCategory + "/.");
 				}
 				processMenuCategory(holder, cat.getListChoiceList(),
@@ -191,7 +191,7 @@ public class MindMapMenuController
 				String keystroke = action.getKeyRef();
 				try {
 					Action theAction = (Action) Tools.getField(new Object[] {
-							this, getController() }, field);
+							this, mindMapController.getController() }, field);
 					String theCategory = categoryCopy + "/" + name;
 					if (obj instanceof MenuCheckedAction) {
 						addCheckBox(holder, theCategory, theAction, keystroke);
@@ -229,23 +229,23 @@ public class MindMapMenuController
 			MindMapArrowLinkModel link = (MindMapArrowLinkModel) obj;
 			JPopupMenu arrowLinkPopup = new JPopupMenu();
 			// block the screen while showing popup.
-			arrowLinkPopup.addPopupMenuListener(this.popupListenerSingleton);
-			removeArrowLinkAction.setArrowLink(link);
-			arrowLinkPopup.add(new RemoveArrowLinkAction(this, link));
-			arrowLinkPopup.add(new ColorArrowLinkAction(this, link));
+			arrowLinkPopup.addPopupMenuListener(mindMapController.popupListenerSingleton);
+			mindMapController.removeArrowLinkAction.setArrowLink(link);
+			arrowLinkPopup.add(new RemoveArrowLinkAction(mindMapController, link));
+			arrowLinkPopup.add(new ColorArrowLinkAction(mindMapController, link));
 			arrowLinkPopup.addSeparator();
 			/* The arrow state as radio buttons: */
 			JRadioButtonMenuItem itemnn = new JRadioButtonMenuItem(
-					new ChangeArrowsInArrowLinkAction(this, "none",
+					new ChangeArrowsInArrowLinkAction(mindMapController, "none",
 							"images/arrow-mode-none.png", link, false, false));
 			JRadioButtonMenuItem itemnt = new JRadioButtonMenuItem(
-					new ChangeArrowsInArrowLinkAction(this, "forward",
+					new ChangeArrowsInArrowLinkAction(mindMapController, "forward",
 							"images/arrow-mode-forward.png", link, false, true));
 			JRadioButtonMenuItem itemtn = new JRadioButtonMenuItem(
-					new ChangeArrowsInArrowLinkAction(this, "backward",
+					new ChangeArrowsInArrowLinkAction(mindMapController, "backward",
 							"images/arrow-mode-backward.png", link, true, false));
 			JRadioButtonMenuItem itemtt = new JRadioButtonMenuItem(
-					new ChangeArrowsInArrowLinkAction(this, "both",
+					new ChangeArrowsInArrowLinkAction(mindMapController, "both",
 							"images/arrow-mode-both.png", link, true, true));
 			itemnn.setText(null);
 			itemnt.setText(null);
@@ -265,27 +265,27 @@ public class MindMapMenuController
 
 			arrowLinkPopup.addSeparator();
 
-			arrowLinkPopup.add(new GotoLinkNodeAction(this, link.getSource()));
-			arrowLinkPopup.add(new GotoLinkNodeAction(this, link.getTarget()));
+			arrowLinkPopup.add(new GotoLinkNodeAction(mindMapController, link.getSource()));
+			arrowLinkPopup.add(new GotoLinkNodeAction(mindMapController, link.getTarget()));
 
 			arrowLinkPopup.addSeparator();
 			// add all links from target and from source:
 			HashSet NodeAlreadyVisited = new HashSet();
 			NodeAlreadyVisited.add(link.getSource());
 			NodeAlreadyVisited.add(link.getTarget());
-			Vector links = getMindMapMapModel().getLinkRegistry().getAllLinks(
+			Vector links = mindMapController.getMindMapMapModel().getLinkRegistry().getAllLinks(
 					link.getSource());
-			links.addAll(getMindMapMapModel().getLinkRegistry().getAllLinks(
+			links.addAll(mindMapController.getMindMapMapModel().getLinkRegistry().getAllLinks(
 					link.getTarget()));
 			for (int i = 0; i < links.size(); ++i) {
 				MindMapArrowLinkModel foreign_link = (MindMapArrowLinkModel) links
 						.get(i);
 				if (NodeAlreadyVisited.add(foreign_link.getTarget())) {
-					arrowLinkPopup.add(new GotoLinkNodeAction(this,
+					arrowLinkPopup.add(new GotoLinkNodeAction(mindMapController,
 							foreign_link.getTarget()));
 				}
 				if (NodeAlreadyVisited.add(foreign_link.getSource())) {
-					arrowLinkPopup.add(new GotoLinkNodeAction(this,
+					arrowLinkPopup.add(new GotoLinkNodeAction(mindMapController,
 							foreign_link.getSource()));
 				}
 			}
