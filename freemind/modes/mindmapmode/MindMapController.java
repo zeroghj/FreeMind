@@ -297,7 +297,6 @@ public class MindMapController extends ControllerAdapter implements
 	}
 
 	// Mode mode;
-	private MindMapPopupMenu popupmenu;
 	// private JToolBar toolbar;
 	private MindMapToolBar toolbar;
 	private boolean addAsChildMode = false;
@@ -424,10 +423,11 @@ public class MindMapController extends ControllerAdapter implements
 
 	FileFilter filefilter = new MindMapFilter();
 
-	private MenuStructure mMenuStructure;
 	private List mRegistrations;
 	private List mPatternsList = new Vector();
 	private long mGetEventIfChangedAfterThisTimeInMillies = 0;
+	
+	private MindMapMenuController mindMapMenuController;
 
 	public MindMapController(Mode mode) {
 		super(mode);
@@ -443,6 +443,7 @@ public class MindMapController extends ControllerAdapter implements
 	}
 
 	protected void init() {
+		mindMapMenuController = new MindMapMenuController(this);
 		logger.info("createIconActions");
 		// create standard actions:
 		createStandardActions();
@@ -452,19 +453,6 @@ public class MindMapController extends ControllerAdapter implements
 		// node hook actions:
 		createNodeHookActions();
 
-		logger.info("mindmap_menus");
-		// load menus:
-		try {
-			InputStream in;
-			in = this.getFrame().getResource("mindmap_menus.xml").openStream();
-			mMenuStructure = updateMenusFromXml(in);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			freemind.main.Resources.getInstance().logException(e);
-		}
-
-		logger.info("MindMapPopupMenu");
-		popupmenu = new MindMapPopupMenu(this);
 		logger.info("MindMapToolBar");
 		toolbar = new MindMapToolBar(this);
 
@@ -894,137 +882,34 @@ public class MindMapController extends ControllerAdapter implements
 	/**
 	 */
 	public void updateMenus(StructuredMenuHolder holder) {
-
-		processMenuCategory(holder, mMenuStructure.getListChoiceList(), ""); /*
-																			 * MenuBar
-																			 * .
-																			 * MENU_BAR_PREFIX
-																			 */
-		// add hook actions to this holder.
-		// hooks, fc, 1.3.2004:
-		MindMapHookFactory hookFactory = (MindMapHookFactory) getHookFactory();
-		for (int i = 0; i < hookActions.size(); ++i) {
-			AbstractAction hookAction = (AbstractAction) hookActions.get(i);
-			String hookName = ((HookAction) hookAction).getHookName();
-			hookFactory.decorateAction(hookName, hookAction);
-			List hookMenuPositions = hookFactory.getHookMenuPositions(hookName);
-			for (Iterator j = hookMenuPositions.iterator(); j.hasNext();) {
-				String pos = (String) j.next();
-				holder.addMenuItem(
-						hookFactory.getMenuItem(hookName, hookAction), pos);
-			}
-		}
-		// update popup and toolbar:
-		popupmenu.update(holder);
-		toolbar.update(holder);
-
-		// editMenu.add(getExtensionMenu());
-		String formatMenuString = MenuBar.FORMAT_MENU;
-		createPatternSubMenu(holder, formatMenuString);
-
-		// editMenu.add(getIconMenu());
-		addIconsToMenu(holder, MenuBar.INSERT_MENU + "icons");
-
+		mindMapMenuController.updateMenus(holder);
 	}
 
 	public void addIconsToMenu(StructuredMenuHolder holder,
 			String iconMenuString) {
-		JMenu iconMenu = holder.addMenu(new JMenu(getText("icon_menu")),
-				iconMenuString + "/.");
-		holder.addAction(removeLastIconAction, iconMenuString
-				+ "/removeLastIcon");
-		holder.addAction(removeAllIconsAction, iconMenuString
-				+ "/removeAllIcons");
-		holder.addSeparator(iconMenuString);
-		for (int i = 0; i < iconActions.size(); ++i) {
-			JMenuItem item = holder.addAction((Action) iconActions.get(i),
-					iconMenuString + "/" + i);
-		}
+		mindMapMenuController.addIconsToMenu(holder, iconMenuString);
 	}
 
 	/**
      */
 	public void createPatternSubMenu(StructuredMenuHolder holder,
 			String formatMenuString) {
-		for (int i = 0; i < patterns.length; ++i) {
-			JMenuItem item = holder.addAction(patterns[i], formatMenuString
-					+ "patterns/patterns/" + i);
-			item.setAccelerator(KeyStroke
-					.getKeyStroke(getFrame().getAdjustableProperty(
-							"keystroke_apply_pattern_" + (i + 1))));
-		}
+		mindMapMenuController.createPatternSubMenu(holder, formatMenuString);
 	}
 
 	public MenuStructure updateMenusFromXml(InputStream in) {
-		// get from resources:
-		try {
-			IUnmarshallingContext unmarshaller = XmlBindingTools.getInstance()
-					.createUnmarshaller();
-			MenuStructure menus = (MenuStructure) unmarshaller
-					.unmarshalDocument(in, null);
-			return menus;
-		} catch (JiBXException e) {
-			freemind.main.Resources.getInstance().logException(e);
-			throw new IllegalArgumentException(
-					"Menu structure could not be read.");
-		}
+		mindMapMenuController.updateMenusFromXml(in);
 	}
 
 	/**
      */
 	public void processMenuCategory(StructuredMenuHolder holder, List list,
 			String category) {
-		String categoryCopy = category;
-		ButtonGroup buttonGroup = null;
-		for (Iterator i = list.iterator(); i.hasNext();) {
-			Object obj = (Object) i.next();
-			if (obj instanceof MenuCategoryBase) {
-				MenuCategoryBase cat = (MenuCategoryBase) obj;
-				String newCategory = categoryCopy + "/" + cat.getName();
-				holder.addCategory(newCategory);
-				if (cat instanceof MenuSubmenu) {
-					MenuSubmenu submenu = (MenuSubmenu) cat;
-					holder.addMenu(new JMenu(getText(submenu.getNameRef())),
-							newCategory + "/.");
-				}
-				processMenuCategory(holder, cat.getListChoiceList(),
-						newCategory);
-			} else if (obj instanceof MenuActionBase) {
-				MenuActionBase action = (MenuActionBase) obj;
-				String field = action.getField();
-				String name = action.getName();
-				if (name == null) {
-					name = field;
-				}
-				String keystroke = action.getKeyRef();
-				try {
-					Action theAction = (Action) Tools.getField(new Object[] {
-							this, getController() }, field);
-					String theCategory = categoryCopy + "/" + name;
-					if (obj instanceof MenuCheckedAction) {
-						addCheckBox(holder, theCategory, theAction, keystroke);
-					} else if (obj instanceof MenuRadioAction) {
-						final JRadioButtonMenuItem item = (JRadioButtonMenuItem) addRadioItem(
-								holder, theCategory, theAction, keystroke,
-								((MenuRadioAction) obj).getSelected());
-						if (buttonGroup == null)
-							buttonGroup = new ButtonGroup();
-						buttonGroup.add(item);
-
-					} else {
-						add(holder, theCategory, theAction, keystroke);
-					}
-				} catch (Exception e1) {
-					freemind.main.Resources.getInstance().logException(e1);
-				}
-			} else if (obj instanceof MenuSeparator) {
-				holder.addSeparator(categoryCopy);
-			} /* else exception */
-		}
+		mindMapMenuController.processMenuCategory(holder, list, category);
 	}
 
 	public JPopupMenu getPopupMenu() {
-		return popupmenu;
+		return mindMapMenuController.getPopupMenu();
 	}
 
 	/**
@@ -1032,74 +917,7 @@ public class MindMapController extends ControllerAdapter implements
 	 * least removelink available.
 	 */
 	public JPopupMenu getPopupForModel(java.lang.Object obj) {
-		if (obj instanceof MindMapArrowLinkModel) {
-			// yes, this is a link.
-			MindMapArrowLinkModel link = (MindMapArrowLinkModel) obj;
-			JPopupMenu arrowLinkPopup = new JPopupMenu();
-			// block the screen while showing popup.
-			arrowLinkPopup.addPopupMenuListener(this.popupListenerSingleton);
-			removeArrowLinkAction.setArrowLink(link);
-			arrowLinkPopup.add(new RemoveArrowLinkAction(this, link));
-			arrowLinkPopup.add(new ColorArrowLinkAction(this, link));
-			arrowLinkPopup.addSeparator();
-			/* The arrow state as radio buttons: */
-			JRadioButtonMenuItem itemnn = new JRadioButtonMenuItem(
-					new ChangeArrowsInArrowLinkAction(this, "none",
-							"images/arrow-mode-none.png", link, false, false));
-			JRadioButtonMenuItem itemnt = new JRadioButtonMenuItem(
-					new ChangeArrowsInArrowLinkAction(this, "forward",
-							"images/arrow-mode-forward.png", link, false, true));
-			JRadioButtonMenuItem itemtn = new JRadioButtonMenuItem(
-					new ChangeArrowsInArrowLinkAction(this, "backward",
-							"images/arrow-mode-backward.png", link, true, false));
-			JRadioButtonMenuItem itemtt = new JRadioButtonMenuItem(
-					new ChangeArrowsInArrowLinkAction(this, "both",
-							"images/arrow-mode-both.png", link, true, true));
-			itemnn.setText(null);
-			itemnt.setText(null);
-			itemtn.setText(null);
-			itemtt.setText(null);
-			arrowLinkPopup.add(itemnn);
-			arrowLinkPopup.add(itemnt);
-			arrowLinkPopup.add(itemtn);
-			arrowLinkPopup.add(itemtt);
-			// select the right one:
-			boolean a = !link.getStartArrow().equals("None");
-			boolean b = !link.getEndArrow().equals("None");
-			itemtt.setSelected(a && b);
-			itemnt.setSelected(!a && b);
-			itemtn.setSelected(a && !b);
-			itemnn.setSelected(!a && !b);
-
-			arrowLinkPopup.addSeparator();
-
-			arrowLinkPopup.add(new GotoLinkNodeAction(this, link.getSource()));
-			arrowLinkPopup.add(new GotoLinkNodeAction(this, link.getTarget()));
-
-			arrowLinkPopup.addSeparator();
-			// add all links from target and from source:
-			HashSet NodeAlreadyVisited = new HashSet();
-			NodeAlreadyVisited.add(link.getSource());
-			NodeAlreadyVisited.add(link.getTarget());
-			Vector links = getMindMapMapModel().getLinkRegistry().getAllLinks(
-					link.getSource());
-			links.addAll(getMindMapMapModel().getLinkRegistry().getAllLinks(
-					link.getTarget()));
-			for (int i = 0; i < links.size(); ++i) {
-				MindMapArrowLinkModel foreign_link = (MindMapArrowLinkModel) links
-						.get(i);
-				if (NodeAlreadyVisited.add(foreign_link.getTarget())) {
-					arrowLinkPopup.add(new GotoLinkNodeAction(this,
-							foreign_link.getTarget()));
-				}
-				if (NodeAlreadyVisited.add(foreign_link.getSource())) {
-					arrowLinkPopup.add(new GotoLinkNodeAction(this,
-							foreign_link.getSource()));
-				}
-			}
-			return arrowLinkPopup;
-		}
-		return null;
+		return mindMapMenuController.getPopupForModel(obj);
 	}
 
 	// convenience methods
