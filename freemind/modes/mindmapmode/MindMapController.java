@@ -292,6 +292,10 @@ public class MindMapController extends ControllerAdapter implements
 
 	private ActionFactory actionFactory;
 	private Vector hookActions;
+	public Vector getHookActions() {
+		return hookActions;
+	}
+
 	// Mode mode;
 	private MindMapPopupMenu popupmenu;
 	// private JToolBar toolbar;
