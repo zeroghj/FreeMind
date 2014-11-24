@@ -1095,7 +1095,7 @@ public abstract class ControllerAdapter implements ModeController,
 	 * Take care! This listener is also used for modelpopups (as for graphical
 	 * links).
 	 */
-	protected final ControllerPopupMenuListener popupListenerSingleton = new ControllerPopupMenuListener();
+	public final ControllerPopupMenuListener popupListenerSingleton = new ControllerPopupMenuListener();
 
 	public void showPopupMenu(MouseEvent e) {
 		if (e.isPopupTrigger()) {
