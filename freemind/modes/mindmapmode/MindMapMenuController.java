@@ -32,6 +32,7 @@ import freemind.controller.actions.generated.instance.MenuSeparator;
 import freemind.controller.actions.generated.instance.MenuStructure;
 import freemind.controller.actions.generated.instance.MenuSubmenu;
 import freemind.main.Tools;
+import freemind.modes.ButtonAdapter;
 import freemind.modes.ControllerAdapter;
 import freemind.modes.MindMapNode;
 import freemind.modes.MindMap.MapSourceChangedObserver;
@@ -55,6 +56,7 @@ public class MindMapMenuController
 	private Vector hookActions;
 	private Vector iconActions;
 	private ApplyPatternAction patterns[];
+	private ButtonAdapter adapter = new ButtonAdapter(null);
 	
 	public MindMapMenuController(MindMapController mindMapController)
 	{
@@ -194,9 +196,9 @@ public class MindMapMenuController
 							this, mindMapController.getController() }, field);
 					String theCategory = categoryCopy + "/" + name;
 					if (obj instanceof MenuCheckedAction) {
-						addCheckBox(holder, theCategory, theAction, keystroke);
+						adapter.addCheckBox(holder, theCategory, theAction, keystroke);
 					} else if (obj instanceof MenuRadioAction) {
-						final JRadioButtonMenuItem item = (JRadioButtonMenuItem) addRadioItem(
+						final JRadioButtonMenuItem item = (JRadioButtonMenuItem) adapter.addRadioItem(
 								holder, theCategory, theAction, keystroke,
 								((MenuRadioAction) obj).getSelected());
 						if (buttonGroup == null)
@@ -204,7 +206,7 @@ public class MindMapMenuController
 						buttonGroup.add(item);
 
 					} else {
-						add(holder, theCategory, theAction, keystroke);
+						adapter.add(holder, theCategory, theAction, keystroke);
 					}
 				} catch (Exception e1) {
 					freemind.main.Resources.getInstance().logException(e1);
