@@ -54,11 +54,11 @@ import freemind.modes.mindmapmode.actions.xml.ActionFactory;
  * @author foltin see MindMapController
  * */
 public interface MindMapActions {
-	public static final int NEW_CHILD_WITHOUT_FOCUS = 1; // old model of
+	/*public static final int NEW_CHILD_WITHOUT_FOCUS = 1; // old model of
 															// insertion
 	public static final int NEW_CHILD = 2;
 	public static final int NEW_SIBLING_BEHIND = 3;
-	public static final int NEW_SIBLING_BEFORE = 4;
+	public static final int NEW_SIBLING_BEFORE = 4;*/
 
 	/**
 	 * Call this method, if you changed anything at a node. This method makes
@@ -85,7 +85,7 @@ public interface MindMapActions {
 
 	public void setNoteText(MindMapNode selected, String newText);
 
-	public MindMapNode addNew(final MindMapNode target, final int newNodeMode,
+	public MindMapNode addNew(final MindMapNode target, MindMapChild child,
 			final KeyEvent e);
 
 	/**

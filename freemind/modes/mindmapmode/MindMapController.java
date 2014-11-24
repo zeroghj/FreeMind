@@ -173,6 +173,7 @@ import freemind.modes.mindmapmode.actions.ImportFolderStructureAction;
 import freemind.modes.mindmapmode.actions.ItalicAction;
 import freemind.modes.mindmapmode.actions.JoinNodesAction;
 import freemind.modes.mindmapmode.actions.MindMapActions;
+import freemind.modes.mindmapmode.actions.MindMapChild;
 import freemind.modes.mindmapmode.actions.MindMapControllerHookAction;
 import freemind.modes.mindmapmode.actions.ModeControllerActionHandler;
 import freemind.modes.mindmapmode.actions.MoveNodeAction;
@@ -1445,10 +1446,10 @@ public class MindMapController extends ControllerAdapter implements
 		paste.paste(node, parent);
 	}
 
-	public MindMapNode addNew(final MindMapNode target, final int newNodeMode,
+	public MindMapNode addNew(final MindMapNode target, MindMapChild child,
 			final KeyEvent e) {
 		edit.stopEditing();
-		return newChild.addNew(target, newNodeMode, e);
+		return newChild.addNew(target, child, e);
 	}
 
 	public MindMapNode addNewNode(MindMapNode parent, int index,
