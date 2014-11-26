@@ -37,7 +37,8 @@ public class NewSiblingAction extends AbstractAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		NewSiblingBehind sibling = new NewSiblingBehind();
 		controller.addNew(controller.getSelected(),
-				MindMapController.NEW_SIBLING_BEHIND, null);
+				sibling, null);
 	}
 }

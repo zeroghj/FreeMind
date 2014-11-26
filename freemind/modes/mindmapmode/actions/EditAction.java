@@ -108,8 +108,9 @@ public class EditAction extends AbstractAction implements ActorXml {
 				edit(selectedNodeView, selectedNodeView, e, false, false,
 						editLong);
 			} else if (!mMindMapController.isBlocked()) {
+				NewSiblingBehind sibling = new NewSiblingBehind();
 				mMindMapController.addNew(mMindMapController.getSelected(),
-						MindMapController.NEW_SIBLING_BEHIND, e);
+						sibling, e);
 			}
 			if (e != null) {
 				e.consume();

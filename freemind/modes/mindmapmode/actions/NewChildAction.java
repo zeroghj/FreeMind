@@ -58,7 +58,8 @@ public class NewChildAction extends AbstractAction implements ActorXml {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		this.c.addNew(c.getSelected(), MindMapController.NEW_CHILD, null);
+		NewChild child = new NewChild();
+		this.c.addNew(c.getSelected(), child, null);
 	}
 
 	/*
@@ -100,14 +101,15 @@ public class NewChildAction extends AbstractAction implements ActorXml {
 		return NewNodeAction.class;
 	}
 
-	public MindMapNode addNew(final MindMapNode target, int newNodeMode,
+	public MindMapNode addNew(final MindMapNode target, MindMapChild child,
 			final KeyEvent e) {
 		final MindMapNode targetNode = target;
 		MindMapNode newNode = null;
-
-		switch (newNodeMode) {
-		case MindMapController.NEW_SIBLING_BEFORE:
-		case MindMapController.NEW_SIBLING_BEHIND: {
+		
+		return child.check(c,target,e,this);
+		//switch (newNodeMode) {
+		//case MindMapController.NEW_SIBLING_BEFORE:
+	/*	case MindMapController.NEW_SIBLING_BEHIND: {
 			if (!targetNode.isRoot()) {
 				MindMapNode parent = targetNode.getParentNode();
 				int childPosition = parent.getChildPosition(targetNode);
@@ -127,9 +129,9 @@ public class NewChildAction extends AbstractAction implements ActorXml {
 				// @fallthrough
 			}
 		}
-
-		case MindMapController.NEW_CHILD:
-		case MindMapController.NEW_CHILD_WITHOUT_FOCUS: {
+*/
+		//case MindMapController.NEW_CHILD:
+		/*case MindMapController.NEW_CHILD_WITHOUT_FOCUS: {
 			final boolean parentFolded = targetNode.isFolded();
 			if (parentFolded) {
 				c.setFolded(targetNode, false);
@@ -146,7 +148,7 @@ public class NewChildAction extends AbstractAction implements ActorXml {
 			break;
 		}
 		}
-		return newNode;
+		return newNode;*/
 	}
 
 	public MindMapNode addNewNode(MindMapNode parent, int index) {
