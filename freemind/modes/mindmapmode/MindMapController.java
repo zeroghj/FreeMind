@@ -906,7 +906,53 @@ public class MindMapController extends ControllerAdapter implements
      */
 	public void processMenuCategory(StructuredMenuHolder holder, List list,
 			String category) {
-		mindMapMenuController.processMenuCategory(holder, list, category);
+		String categoryCopy = category;
+		ButtonGroup buttonGroup = null;
+		for (Iterator i = list.iterator(); i.hasNext();) {
+			Object obj = (Object) i.next();
+			if (obj instanceof MenuCategoryBase) {
+				MenuCategoryBase cat = (MenuCategoryBase) obj;
+				String newCategory = categoryCopy + "/" + cat.getName();
+				holder.addCategory(newCategory);
+				if (cat instanceof MenuSubmenu) {
+					MenuSubmenu submenu = (MenuSubmenu) cat;
+					holder.addMenu(new JMenu(getText(submenu.getNameRef())),
+							newCategory + "/.");
+				}
+				processMenuCategory(holder, cat.getListChoiceList(),
+						newCategory);
+			} else if (obj instanceof MenuActionBase) {
+				MenuActionBase action = (MenuActionBase) obj;
+				String field = action.getField();
+				String name = action.getName();
+				if (name == null) {
+					name = field;
+				}
+				String keystroke = action.getKeyRef();
+				try {
+					Action theAction = (Action) Tools.getField(new Object[] {
+							this, getController() }, field);
+					String theCategory = categoryCopy + "/" + name;
+					if (obj instanceof MenuCheckedAction) {
+						addCheckBox(holder, theCategory, theAction, keystroke);
+					} else if (obj instanceof MenuRadioAction) {
+						final JRadioButtonMenuItem item = (JRadioButtonMenuItem) addRadioItem(
+								holder, theCategory, theAction, keystroke,
+								((MenuRadioAction) obj).getSelected());
+						if (buttonGroup == null)
+							buttonGroup = new ButtonGroup();
+						buttonGroup.add(item);
+
+					} else {
+						add(holder, theCategory, theAction, keystroke);
+					}
+				} catch (Exception e1) {
+					freemind.main.Resources.getInstance().logException(e1);
+				}
+			} else if (obj instanceof MenuSeparator) {
+				holder.addSeparator(categoryCopy);
+			} /* else exception */
+		}
 	}
 
 	public JPopupMenu getPopupMenu() {
