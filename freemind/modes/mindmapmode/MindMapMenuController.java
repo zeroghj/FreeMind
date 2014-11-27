@@ -53,7 +53,6 @@ public class MindMapMenuController
 	private MenuStructure mMenuStructure;
 	private MindMapPopupMenu popupmenu;
 	private MindMapToolBar toolbar;
-	private Vector hookActions;
 	private Vector iconActions;
 	private ApplyPatternAction patterns[];
 	private ButtonAdapter adapter = new ButtonAdapter(null);
@@ -71,7 +70,6 @@ public class MindMapMenuController
 	
 	private void init()
 	{	
-		hookActions = mindMapController.getHookActions();
 		iconActions = mindMapController.iconActions;
 		toolbar = mindMapController.getToolBar();
 		patterns = mindMapController.patterns;
@@ -101,8 +99,8 @@ public class MindMapMenuController
 		// add hook actions to this holder.
 		// hooks, fc, 1.3.2004:
 		MindMapHookFactory hookFactory = (MindMapHookFactory) mindMapController.getHookFactory();
-		for (int i = 0; i < hookActions.size(); ++i) {
-			AbstractAction hookAction = (AbstractAction) hookActions.get(i);
+		for (int i = 0; i < mindMapController.getHookActions().size(); ++i) {
+			AbstractAction hookAction = (AbstractAction) mindMapController.getHookActions().get(i);
 			String hookName = ((HookAction) hookAction).getHookName();
 			hookFactory.decorateAction(hookName, hookAction);
 			List hookMenuPositions = hookFactory.getHookMenuPositions(hookName);
