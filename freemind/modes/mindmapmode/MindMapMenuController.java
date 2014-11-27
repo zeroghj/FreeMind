@@ -52,9 +52,6 @@ public class MindMapMenuController
 	private MindMapController mindMapController;
 	private MenuStructure mMenuStructure;
 	private MindMapPopupMenu popupmenu;
-	private MindMapToolBar toolbar;
-	private Vector iconActions;
-	private ApplyPatternAction patterns[];
 	private ButtonAdapter adapter = new ButtonAdapter(null);
 	
 	public MindMapMenuController(MindMapController mindMapController)
@@ -70,10 +67,6 @@ public class MindMapMenuController
 	
 	private void init()
 	{	
-		iconActions = mindMapController.iconActions;
-		toolbar = mindMapController.getToolBar();
-		patterns = mindMapController.patterns;
-		
 		logger.info("mindmap_menus");
 		// load menus:
 		try {
@@ -112,7 +105,7 @@ public class MindMapMenuController
 		}
 		// update popup and toolbar:
 		popupmenu.update(holder);
-		toolbar.update(holder);
+		mindMapController.getToolBar().update(holder);
 
 		// editMenu.add(getExtensionMenu());
 		String formatMenuString = MenuBar.FORMAT_MENU;
@@ -132,16 +125,16 @@ public class MindMapMenuController
 		holder.addAction(mindMapController.removeAllIconsAction, iconMenuString
 				+ "/removeAllIcons");
 		holder.addSeparator(iconMenuString);
-		for (int i = 0; i < iconActions.size(); ++i) {
-			JMenuItem item = holder.addAction((Action) iconActions.get(i),
+		for (int i = 0; i < mindMapController.iconActions.size(); ++i) {
+			JMenuItem item = holder.addAction((Action) mindMapController.iconActions.get(i),
 					iconMenuString + "/" + i);
 		}
 	}
 	
 	public void createPatternSubMenu(StructuredMenuHolder holder,
 			String formatMenuString) {
-		for (int i = 0; i < patterns.length; ++i) {
-			JMenuItem item = holder.addAction(patterns[i], formatMenuString
+		for (int i = 0; i < mindMapController.patterns.length; ++i) {
+			JMenuItem item = holder.addAction(mindMapController.patterns[i], formatMenuString
 					+ "patterns/patterns/" + i);
 			item.setAccelerator(KeyStroke
 					.getKeyStroke(mindMapController.getFrame().getAdjustableProperty(
