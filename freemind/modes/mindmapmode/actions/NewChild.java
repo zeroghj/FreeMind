@@ -9,9 +9,19 @@ import freemind.view.mindmapview.NodeView;
 public class NewChild extends MindMapChild{
 
 	public MindMapNode check(MindMapController c,MindMapNode target,KeyEvent e, NewChildAction action){
-		MindMapNode newNode = null;
-		final NodeView nodeView = c.getNodeView(newNode);
-		c.select(nodeView);
-		return null;
+		final MindMapNode targetNode = target;
+			MindMapNode newNode = null;
+	final boolean parentFolded = targetNode.isFolded();
+	if (parentFolded) {
+		c.setFolded(targetNode, false);
 	}
+	int position = c.getFrame().getProperty("placenewbranches")
+			.equals("last") ? targetNode.getChildCount() : 0;
+	newNode = action.addNewNode(targetNode, position);
+	final NodeView nodeView = c.getNodeView(newNode);
+	c.select(nodeView);
+	c.edit.edit(nodeView, c.getNodeView(target), e, true, parentFolded,
+			false);
+	return newNode;
+}
 }
